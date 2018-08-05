@@ -32,7 +32,7 @@ def paremeter_sweep(var,val_list,params,options,N=2000):
     np.savetxt(var+'_sweep.csv',np.vstack([val_list,angles]))
     return angles
 
-params={'size':(50,50),'m':1,'h':0,'d':1,'u1':0.4,'u2':0.3,'k':1.5}
+params={'size':(80,80),'m':1,'h':0,'d':1,'u1':0.4,'u2':0.05,'k':1.5}
 options={'report_rate':0,'plot':False,'save_data':False,'diffusion':True,'random_pour':False}
 
 #h: init_kinetic_energy: h*mgd, qusi-static if h==0
@@ -40,17 +40,19 @@ options={'report_rate':0,'plot':False,'save_data':False,'diffusion':True,'random
 
 # %%
 test=CelluarAutomata(**params)
-test.run_automaton(5000,report_rate=500,plot=True,save_data=True,diffusion=True,random_pour=False)
+test.run_automaton(600,report_rate=100,plot=True,save_data=True,diffusion=True,random_pour=False)
 
 #parameter sweep
 #%%
-k_array=np.arange(1,2.5,0.2)
-angle_k=paremeter_sweep('k',k_array,params,options)
+k_array=np.arange(0,6.5,0.2)
+angle_k=paremeter_sweep('k',k_array,params,options,N=1000)
 fig=plt.figure()
 fig.dpi=120
 plt.plot(k_array,angle_k,'bo--')
 plt.ylabel('Repose Angle [deg]')
 plt.xlabel('Energy threshold [U/mgd]')
+plt.savefig('./figs/k_sweep.png')
+
 
 #%%
 h_array=np.arange(0,3.2,0.2)
@@ -79,4 +81,11 @@ plt.plot(u2_array,angle_u2,'bo--')
 plt.ylabel('Repose Angle [deg]')
 plt.xlabel('Energy diffusion coefficient u2 [1]')
 
+#%%
 
+params={'size':(30,30),'m':1,'h':0,'d':1,'u1':0.4,'u2':0.3,'k':0.5}
+t=CelluarAutomata(**params)
+t.run_automaton(1000,report_rate=500,plot=True,save_data=True,diffusion=True,random_pour=False)
+
+plt.imshow(t.h_matr)
+cal_angle_plane(t.h_matr)

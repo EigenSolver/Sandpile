@@ -34,5 +34,5 @@ def generate_animation(data,file_name="Sandpile_gerenation.mp4",view='upper'):
 
 if __name__=='__main__':
     print('Loading data...')
-    data=np.loadtxt('h_data.csv')
+    data=np.loadtxt('E_data.csv')
     generate_animation(data,file_name='Sandpile_cut_view.mp4',view='right')
