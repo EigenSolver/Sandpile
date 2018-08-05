@@ -31,7 +31,7 @@ Doctest-Example:
 19.6
 >>> testCA.unit_E
 9.8
->>> testCA.pour_grain()
+>>> testCA.pour_grain(True)
 >>> testCA.h_matr.sum()
 1.0
 >>> testCA.h_matr = np.array([[0.,  0.,  0.,  0.,  0.],[0.,  0.,  0.,  0.,  0.],[0.,  8.,  0.,  0.,  0.],[0.,  0.,  0.,  0.,  2.],[0.,  0.,  0.,  0.,  0.]])
@@ -50,6 +50,9 @@ True
 >>> testCA.update_point(loc)
 >>> testCA.h_matr_next[loc]
 7.0
+>>> testCA.update_point(loc)
+>>> testCA.h_matr_next[loc]
+6.0
 """
 
 import numpy as np
@@ -65,7 +68,8 @@ class CelluarAutomata(object):
     '''
 #    direction_array = np.array(
 #        [(0, 1), (0, -1), (1, 0), (-1, 0), (1, -1), (-1, -1), (-1, 1), (1, 1)])
-    direction_array = list(map(np.array,[(0, 1), (0, -1), (1, 0), (-1, 0)]))
+    direction_array = np.array(
+        [(0, 1), (0, -1), (1, 0), (-1, 0), (1, -1), (-1, -1), (-1, 1), (1, 1)])
 
     def __init__(self, m, d, u1, u2, k, h, size=(5, 5)):
         '''
@@ -103,7 +107,7 @@ class CelluarAutomata(object):
         self.active = 0  # signal, indicate if the system is active at previous state
 
         self.iter_index = [np.array([i, j])
-                                    for i in range(size[0]) for j in range(size[0])]
+                                    for i in range(1,size[0]-1) for j in range(1,size[0]-1)]
         #self.up=1.5
 
     def pour_grain(self, random):
@@ -111,19 +115,21 @@ class CelluarAutomata(object):
         pour a grain from height h, to the center location of the grid,
         thus increase the height and energy at the locaton
         '''
-        dest = tuple(self.center+np.random.randint(-1, 2, size=2)) if random else self.center
+        self.active+=1
+        
+        if random:
+            r = np.random.randint(-1, 2, size=2)
+        else:
+            r = np.array([0, 0])
 
-        #increase energy m*g*d*delta_h
-        self.E_matr[dest] += self.unit_E * self.h
-        #self.unit_E * (self.h - self.h_matr[dest])
-
-        #increase the height (number of diameter) by 1
-        self.h_matr[dest] += 1
-        self.h_matr_next[dest] += 1
-
-        #mark as active
-        self.active += 1
-
+        
+        self.E_matr[tuple(self.center + r)] += self.h#*self.unit_E * \
+            #(self.h - self.h_matr[tuple(center_loc + r)])
+        #increase the height(number of diameter) by 1
+        self.h_matr[tuple(self.center + r)] += 1
+        self.h_matr_next[tuple(self.center + r)] += 1
+                
+        
     def test_env(self, loc):
         '''
         given a specific locaton,
@@ -132,14 +138,27 @@ class CelluarAutomata(object):
         :params loc: numpy array, location vector of a specific cell
         :return: tuple, the max height delta and its direction
         '''
-        #cal delta height for all directions
-        envir=[tuple(loc+vec) for vec in CelluarAutomata.direction_array ]
-        del_h=[self.h_matr[tuple(loc)] - self.h_matr[dest] for dest in envir]
+        dirs = self.direction_array
+        del_h_array = np.zeros(dirs.shape[0])
+        i = 0
+        for vec in dirs:
+            del_h_array[i] = self.h_matr[
+                tuple(loc)] - self.h_matr[tuple(loc+vec)]
+            i += 1
 
-        max_del_h = max(del_h)-1
+        max_del_h = del_h_array.max()
         max_vec = choice(dirs[del_h_array == max_del_h])
 
-        return (max_del_h, max_vec)
+        return (max_del_h-1, max_vec)
+    
+#        #cal delta height for all directions
+#        envir=[tuple(loc+vec) for vec in self.direction_array]
+#        del_h=[self.h_matr[tuple(loc)] - self.h_matr[dest] for dest in envir]
+#
+#        max_del_h = max(del_h)-1
+#        max_vec = choice(self.direction_array[np.array(del_h) == max_del_h])
+#
+#        return (max_del_h, max_vec)
 
     def update_point(self, loc):
         '''
@@ -178,7 +197,7 @@ class CelluarAutomata(object):
                     self.E_matr[loca] + del_h * self.unit_E)
                 self.E_matr_next[loca] = 0
 
-                envir=[tuple(np.array(dest)+vec) for vec in CelluarAutomata.direction_array]
+                envir=[tuple(np.array(dest)+vec) for vec in self.direction_array]
                 for near in envir:
                     self.E_matr_next[near] += self.u2 / 4 * self.E_matr[loca]
 
@@ -209,7 +228,7 @@ class CelluarAutomata(object):
             self.update_point(loc)
         self.update_state()
 
-    def plot(self, state='h', option='2D'):
+    def plot_h(self, option='2D'):
         '''
         plot the height of the finall stationary state function, h as default
         '''
@@ -220,38 +239,39 @@ class CelluarAutomata(object):
                 np.arange(self.size[1]), np.arange(self.size[0]))
             x_data = xx.flatten()
             y_data = yy.flatten()
-            if state == 'h':
-                z_data = self.h_matr.flatten()
-                title_str = 'Height distribution in stationary state'
-            elif state == 'E':
-                z_data = self.E_matr.flatten()
-                title_str = 'Energy distribution in stationary state'
-            else:
-                raise Exception('error: invalid state params')
-
+            z_data = self.h_matr.flatten()
+            title_str = 'Height distribution in stationary state'
+    
             ax.bar3d(x_data,
                      y_data,
                      np.zeros(len(z_data)),
                      1, 1, z_data)
             plt.title(title_str)
-            plt.savefig(state + '_plot.png')
+            plt.savefig('h_plot.png')
             plt.show()
-        elif option=='2D':
+            
+        elif option =='2D':
             length=max(self.size)
-            if state=="h":
-                 plt.plot(self.h_matr)
-                 plt.ylim(0,length)
-                 plt.show()
-            elif state == 'E':
-                 plt.plot(self.E_matr)
-                 plt.ylim(0,length)
-                 plt.show()
+            plt.plot(self.h_matr)
+            plt.ylim(0,length)
+            plt.title("h_plot_side_view")
+            plt.show()
+
+            plt.figure()
+            plt.title("h_plot_top_view")
+            plt.imshow(self.h_matr)
+            
+        else:
+            print("Invilad option.")
 
     def run_automaton(self,N,save_data=False,report_rate=10,plot=False,random_pour=True,continous=False):
         '''
         start the model and pour N grains into the ground
+        save the result to file, generate plot
         :params N: total number of grains
+        
         '''
+
         start_time=datetime.datetime.now()
         iter_count = 0
         iter_record=[]
@@ -271,8 +291,8 @@ class CelluarAutomata(object):
                     iter_record.append((i,iter_count))
                     print("{0} grains in the model \n{1} iterations processed".format(i+1, iter_count))
                     print('-------------------------------')
-                    
-        #save the data of h and E 
+
+            
         if save_data:
             np.savetxt('E_data.csv',data_E)
             np.savetxt('h_data.csv',data_h)
@@ -292,10 +312,11 @@ class CelluarAutomata(object):
             plt.plot(iter_record[:,0],iter_record[:,1],marker='*')
             plt.xlabel('Number of grains')
             plt.ylabel('Number of iteration')
+            self.plot_h()
             
 
-#if __name__ == '__main__':
-#    import doctest
-#    doctest.testmod()
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
 
 

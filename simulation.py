@@ -32,20 +32,31 @@ def paremeter_sweep(var,val_list,params,options,N=2000):
     np.savetxt(var+'_sweep.csv',np.vstack([val_list,angles]))
     return angles
 
-params={'size':(80,80),'m':1,'h':0,'d':1,'u1':0.4,'u2':0.05,'k':1.5}
-options={'report_rate':0,'plot':False,'save_data':False,'diffusion':True,'random_pour':False}
+#%%
+
+#set parameters here !!!!
+
+params={'size':(80,80),'m':1,'h':0,'d':1,'u1':0.4,'u2':0.05,'k':0.8}
+options={'report_rate':0,'plot':False,'save_data':False,'Arandom_pour':False}
 
 #h: init_kinetic_energy: h*mgd, qusi-static if h==0
 #k: potential energy depth: k*mgd #total number of grains
+#u1: friction
+#u2: diffusion
+#k: energy threshold
 
 # %%
-test=CelluarAutomata(**params)
-test.run_automaton(600,report_rate=100,plot=True,save_data=True,diffusion=True,random_pour=False)
 
-#parameter sweep
+test=CelluarAutomata(**params)
+test.run_automaton(5000,report_rate=100,plot=True,save_data=True,random_pour=False)
+test.plot_h()
+
+#parameter sweep! I wanna sleep~ QAQ
+
 #%%
-k_array=np.arange(0,6.5,0.2)
-angle_k=paremeter_sweep('k',k_array,params,options,N=1000)
+
+k_array=np.arange(0,2,0.1)
+angle_k=paremeter_sweep('k',k_array,params,options,N=2000)
 fig=plt.figure()
 fig.dpi=120
 plt.plot(k_array,angle_k,'bo--')
