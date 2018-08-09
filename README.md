@@ -16,6 +16,3 @@ For better understanding, sharing and academic communication.
 3. animation.py: visualization, simulation data -> animation, saved to .mp4 files for both top and side views
 4. cal_angle: calulate the repose angle of sandpile, generate angle-time curve
 5. cal_energy: calulate the total energy and collision loss at every iteration, time curve generated
-
-
-@Chongqing University 2018 All rights reserved
