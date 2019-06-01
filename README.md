@@ -12,9 +12,11 @@ This is a demonstration project for China Undergrade Physics Tournament 2018.
 
 For better understanding, sharing and academic communication.
 
-![Top view of simulated sandpile](https://github.com/Neuromancer43/Sandpile/blob/master/sandpile_top_view.gif)
+![](https://github.com/Neuromancer43/Sandpile/blob/master/sandpile_top_view.gif)
+Top view of simulated sandpile
 
-![Angle against Time](https://github.com/Neuromancer43/Sandpile/blob/master/figs/time_curve2.png)
+![](https://github.com/Neuromancer43/Sandpile/blob/master/figs/time_curve2.png)
+Slope angle of sandpile against Time
 
 ## Contents
 1. automata.py: class of cellular automaton, doctest and comments included 
