@@ -17,7 +17,7 @@ For better understanding, sharing and academic communication.
 
 Top view of simulated sandpile
 
-![](https://github.com/Neuromancer43/Sandpile/blob/master/figs/time_curve2.png =400px)
+<img src="https://github.com/Neuromancer43/Sandpile/blob/master/figs/time_curve2.png" alt="drawing" width="400"/>
 
 Slope angle of sandpile against Time
 
