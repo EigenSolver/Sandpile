@@ -4,11 +4,17 @@
 
 The dynamics of sandpile is considered as a systematic event emerge from interactions among massive sand particles, which could be modeled by Cellular Automaton.
 
+
+
 **Released at 2018.4**
 
 This is a demonstration project for China Undergrade Physics Tournament 2018.
 
 For better understanding, sharing and academic communication.
+
+![Top view of simulated sandpile](https://github.com/Neuromancer43/Sandpile/blob/master/sandpile_top_view.gif)
+
+![Angle against Time](https://github.com/Neuromancer43/Sandpile/blob/master/figs/time_curve2.png)
 
 ## Contents
 1. automata.py: class of cellular automaton, doctest and comments included 
@@ -18,6 +24,3 @@ For better understanding, sharing and academic communication.
 5. cal_energy: calulate the total energy and collision loss at every iteration, time curve generated
 6. plot.py: plot figures with simulation data
 
-![Top view of simulated sandpile](https://github.com/Neuromancer43/Sandpile/blob/master/sandpile_top_view.gif)
-
-![Angle against Time](https://github.com/Neuromancer43/Sandpile/blob/master/figs/time_curve2.png)
