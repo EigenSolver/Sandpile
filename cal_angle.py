@@ -66,12 +66,12 @@ if __name__=='__main__':
         angles[-i]=cal_angle_plane(plane)
     angles=angles[1:]
     print('mean：{0}\nstd:{1}'.format(angles[-n//2:].mean(),angles[-n//2:].std()))
-    
+    #%%
     fig=plt.figure()
     fig.dpi=120
     plt.ylabel('Slope Angle [deg]')
-    plt.xlabel('t')
-    plt.plot(exp_data[:,0],angles[:exp_data.shape[0]],label='Model')
-    plt.plot(exp_data[:,0],exp_data[:,2],label="Experiment")
+    plt.xlabel('t [s]')
+    plt.plot(exp_data[:,0],exp_data[:,2],color='turquoise',marker='.',markersize='3',linestyle='',label="Experiment")
+    plt.plot(exp_data[:,0],angles[:exp_data.shape[0]],color='tomato',linestyle='--',label='Model')
     plt.legend()
     plt.show()

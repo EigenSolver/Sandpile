@@ -31,10 +31,12 @@ def generate_animation(data,file_name,fps=60,time=10,view='upper'):
         else:
             x=np.arange(edge_len)
             y=plane[:,edge_len//2]
-            plt.xlim(0,edge_len)
-            plt.ylim(0,edge_len)
-            im,=ax.plot(x,y)
-            ax.fill_between(x,y,where=y>0,facecolor='g')
+#            plt.xlim(0,edge_len)
+#            plt.ylim(0,edge_len)
+            plt.xlim(20,60)
+            plt.ylim(0,40)
+#            im,=ax.fill_between(x,y,where=y>0,facecolor='y')
+            im,=ax.plot(x,y,color='y')
         ims.append([im])
         if count%fps==0:
             print('{}/{} seconds finished!'.format(count//fps,time))
@@ -56,5 +58,5 @@ if __name__=='__main__':
     print('Loading data...')
     data=np.loadtxt('./data/h_data.csv')
     print('Done')
-    generate_animation(data,file_name='Sandpile_side_view_shit.mp4',view='right')
+    generate_animation(data,file_name='Sandpile_side_view.mp4',view='right')
     generate_animation(data,file_name='Sandpile_top_view.mp4',view='upper')

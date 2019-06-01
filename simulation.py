@@ -5,13 +5,13 @@ Created on Sat Mar 24 12:37:00 2018
 @author: ZhangYuning
 @email: neuromancer43@gmail.com
 @institute: Chongqing University
-
 """
 
 import numpy as np
 import matplotlib.pylab as plt
 from automata import CelluarAutomata
 from cal_angle import cal_angle_plane
+import datetime 
 
 def paremeter_sweep(var,val_list,params,options,N=2000):
     '''
@@ -109,4 +109,67 @@ plt.plot(u2_array,angle_u2,'bo--')
 plt.ylabel('Repose Angle [deg]')
 plt.xlabel('Energy diffusion coefficient u2 [1]')
 plt.savefig('./figs/u2_sweep.png')
+#%%
+#2 dimisional sweep
+s_time=datetime.datetime.now()
 
+k_array=np.arange(0.2,2.1,0.2)
+u1_array=np.arange(0.1,0.8,0.1)
+u2_array=np.arange(0.1,0.2,0.05)
+fig=plt.figure()
+kres=[]
+for k in k_array:
+    params['k']=k
+    angles=[]
+    for u2 in u2_array:
+#        u1res=[]
+#        for u2 in u2_array:
+        params['u2']=u2
+#        params['u2']=u2
+        pile=CelluarAutomata(**params)
+        pile.run_automaton(1000,**options)
+        print('k: {}, u2: {} '.format(k,u2))
+        angles.append(cal_angle_plane(pile.h_matr))
+#        u1res.append(angles)
+    print(angles)
+    kres.append(angles.copy())
+     
+import pandas as pd
+pd.DataFrame(kres).transpose().to_csv('2d_sweep.csv')
+
+e_time=datetime.datetime.now()
+print('time used: {}'.format(e_time-s_time))
+
+data=pd.read_csv('2d_sweep.csv')
+
+
+plt.legend()
+plt.show()
+    
+    
+#%%
+angles=[]
+k=2.0
+for u1 in u1_array:
+#        u1res=[]
+#        for u2 in u2_array:
+    params['u1']=u1
+#        params['u2']=u2
+    pile=CelluarAutomata(**params)
+    pile.run_automaton(1000,**options)
+    print('k: {}, u1: {} '.format(k,u1))
+    angles.append(cal_angle_plane(pile.h_matr))
+print(angles)
+kres.append(angles.copy())
+#%%
+u1=0.8
+temp_k=[]
+for k in k_array:
+    params['k']=k
+    pile=CelluarAutomata(**params)
+    pile.run_automaton(1000,**options)
+    print('k: {}, u1: {} '.format(k,u1))
+    temp_k.append(cal_angle_plane(pile.h_matr))
+
+for i in range(len(temp_k)):
+    kres[i].append(temp_k[i])
